@@ -40,14 +40,16 @@ class RepositoryContractTest(unittest.TestCase):
         cls.code_source = "\n".join("".join(c.get("source", [])) for c in cls.code_cells)
         cls.all_source = "\n".join("".join(c.get("source", [])) for c in cls.cells)
 
-    def test_notebook_is_valid_and_has_no_stored_runtime_output(self):
+    def test_submission_notebook_is_valid_and_has_executed_output(self):
         self.assertEqual(self.notebook["nbformat"], 4)
         ids = [c.get("id") for c in self.cells]
         self.assertTrue(all(ids))
         self.assertEqual(len(ids), len(set(ids)))
         self.assertTrue(self.code_cells)
-        self.assertTrue(all(c.get("execution_count") is None for c in self.code_cells))
-        self.assertTrue(all(c.get("outputs") == [] for c in self.code_cells))
+        executed = [c for c in self.code_cells if c.get("execution_count") is not None]
+        self.assertTrue(executed, "The submitted notebook must contain execution evidence")
+        self.assertTrue(any(c.get("outputs") for c in executed))
+        self.assertFalse(any(o.get("output_type") == "error" for c in executed for o in c.get("outputs", [])))
 
     def test_python_cells_parse_after_removing_colab_magic(self):
         for i, cell in enumerate(self.code_cells):
@@ -58,13 +60,18 @@ class RepositoryContractTest(unittest.TestCase):
             with self.subTest(cell=i):
                 ast.parse(src)
 
-    def test_student_todos_are_present_and_unsolved(self):
+    def test_student_implementations_are_present_and_filled(self):
         for name in STUDENT_TODOS:
             with self.subTest(function=name):
                 self.assertRegex(self.code_source, rf"def {name}\(")
-        self.assertGreaterEqual(self.code_source.count("raise NotImplementedError"), len(STUDENT_TODOS) - 2)
-        self.assertIn('STUDENT_ID = ""', self.code_source)
-        self.assertIn('"baseline_accuracy": None', self.code_source)
+        tree = ast.parse("\n".join(line for line in self.code_source.splitlines()
+                                  if not line.lstrip().startswith(("%", "!"))))
+        for node in tree.body:
+            if isinstance(node, ast.FunctionDef) and node.name in STUDENT_TODOS:
+                self.assertFalse(any(isinstance(part, ast.Raise) and isinstance(part.exc, ast.Name)
+                                     and part.exc.id == "NotImplementedError" for part in ast.walk(node)))
+        self.assertIn('STUDENT_ID = "2A202603547"', self.code_source)
+        self.assertIn('"baseline_accuracy": 0.87', self.code_source)
 
     def test_no_solution_helpers_or_secrets_leak(self):
         self.assertNotIn("_FakeOpenAI", self.code_source)
@@ -106,7 +113,7 @@ class RepositoryContractTest(unittest.TestCase):
         for provider in ["openai", "anthropic", "gemini", "groq", "openrouter", "ollama"]:
             with self.subTest(provider=provider):
                 self.assertIn(f'"{provider}":', self.code_source)
-        self.assertIn('LLM_PROVIDER = "openai"', self.code_source)
+        self.assertIn('LLM_PROVIDER = os.getenv("LLM_PROVIDER", "openai")', self.code_source)
         self.assertIn("def call_claude(", self.code_source)
         self.assertIn("def call_llm(", self.code_source)
         self.assertIn("def build_defended_prompt(", self.code_source)
