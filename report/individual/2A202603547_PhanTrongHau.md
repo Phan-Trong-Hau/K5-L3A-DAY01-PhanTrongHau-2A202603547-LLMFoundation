@@ -1,7 +1,7 @@
 # Báo cáo cá nhân — Day 01: Lọc tin nhắn rác bằng ML, DL, Embedding và LLM
 
 - **SEED:** 4388.
-- **Nguồn báo cáo:** code, câu trả lời và output đã lưu trong [notebook bài làm](../../src/day01_spam_ml_dl_embedding_llm.ipynb).
+- **Nguồn báo cáo:** code, câu trả lời và output đã lưu trong [notebook bài làm](../../src/day01_spam_ml_dl_embedding_llm.ipynb), cùng [lab1_report.json](lab1_report.json).
 - **Phạm vi thực hiện:** Phần 0–3 đã có code và output; Phần 4–5 chưa chạy. Báo cáo ghi nhận trạng thái hiện có, không coi các ô mẫu hoặc TODO chưa làm là kết quả thực nghiệm.
 
 ## 1. Bằng chứng và công việc đã thực hiện
@@ -9,7 +9,7 @@
 | Tệp | Trạng thái |
 | --- | --- |
 | [Notebook trong src](../../src/day01_spam_ml_dl_embedding_llm.ipynb) | Có output Phần 0–3; chưa có bản `day01_lab.ipynb` trong thư mục nộp |
-| `lab1_report.json` | Chưa có; ô “Báo cáo cuối” chưa chạy |
+| [lab1_report.json](lab1_report.json) | Đã có: SEED 4388, 6 dự đoán, 13 kiểm tra đạt và kết quả 5 mô hình |
 | [Ảnh tính tay 1](hand_calc_1.jpeg) | Có các bước tính baseline accuracy, sigmoid và F1 |
 | [Ảnh tính tay 2](hand_calc_2.jpeg) | Có các bước tính cosine và chi phí LLM theo giả định của đề |
 | `hand_calc.jpg` | Chưa có file đúng tên quy định; hiện có hai ảnh JPEG ở trên |
@@ -38,19 +38,19 @@ Em đã hoàn thành `cosine_similarity`, `top_k_similar` và `knn_predict`; hai
 
 Encoder MiniLM đóng băng tạo vector 384 chiều. Em đã so sánh ba đầu phân loại kNN, LogReg và MLP, chạy truy vấn tìm kiếm ngữ nghĩa, thử sáu tin ngụy trang và chạy ô trực quan hoá. Truy vấn về việc được chọn nhận kỳ nghỉ miễn phí trả về sáu tin spam gần nhất, cosine khoảng 0.503–0.546. Trên sáu tin ngụy trang, BoW đúng 4/6 và Encoder + LogReg đúng 5/6.
 
-Tổng cộng có **8 ô kiểm tra đạt ở Phần 1–3** theo output đã lưu. Đây chưa phải tổng kết toàn bộ lab vì các kiểm tra LLM, tính tay và ô báo cáo cuối chưa chạy.
+Tổng cộng có **8 ô kiểm tra đạt ở Phần 1–3** theo output đã lưu. JSON ghi thêm 5 kiểm tra tính tay đạt, tổng cộng 13/13 kiểm tra được ghi nhận; chưa có kiểm tra LLM. Notebook mới nhất chưa lưu output ô kiểm tra tính tay và báo cáo cuối.
 
 ## 2. Kết quả chính
 
-Các số dưới đây được chép từ output hiện có, đã làm tròn như notebook. Ô bảng tổng hợp Phần 5 chưa chạy nên chưa có giá trị F1 SUB 40 được hiển thị để trích dẫn.
+Bảng dưới lấy thống nhất từ `lab1_report.json`. Notebook mới nhất trên main có cùng các chỉ số chất lượng được hiển thị nhưng thời gian chạy khác JSON, nên hai tệp không đại diện cho cùng một lần benchmark. Ví dụ p95 MiniLM + MLP head trong notebook là 55.02 ms, còn JSON là 22.13 ms. Các kết luận SLA dưới đây dùng lần đo trong JSON và cần kiểm chứng lại khi triển khai.
 
 | Phương án | Precision test | Recall test | F1 test | F1 SUB 40 | Train (s) | Tin/s cả lô | p95 ms/tin | USD/1k tin (*) |
-| --- | ---: | ---: | ---: | --- | ---: | ---: | ---: | ---: |
-| BoW + LogReg | 0.989 | 0.795 | 0.881 | Chưa hiển thị | 15.5 | 5.570 | 0.14 | 0 |
-| BoW + MLP | 0.990 | 0.902 | 0.944 | Chưa hiển thị | 24.1 | 12.740 | 4.52 | 0 |
-| MiniLM + kNN | 0.883 | 0.946 | 0.914 | Chưa hiển thị | 3.6 | 53 | 88.50 | 0 |
-| MiniLM + LogReg | 0.956 | 0.964 | 0.960 | Chưa hiển thị | 6.0 | 679 | 72.40 | 0 |
-| MiniLM + MLP head | 0.964 | 0.946 | 0.955 | Chưa hiển thị | 6.8 | 1.110 | 50.03 | 0 |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| 1. BoW + LogReg (tự code) | 0.989 | 0.795 | 0.881 | 0.824 | 4.56 | 33992 | 0.10 | 0 |
+| 2. BoW + MLP (deep learning) | 0.990 | 0.902 | 0.944 | 0.857 | 6.28 | 37029 | 0.36 | 0 |
+| 3a. Encoder (MiniLM) + kNN | 0.883 | 0.946 | 0.914 | 0.895 | 1.83 | 134 | 46.65 | 0 |
+| 3b. Encoder (MiniLM) + LogReg | 0.956 | 0.964 | 0.960 | 0.947 | 3.22 | 1159 | 37.11 | 0 |
+| 3c. Encoder (MiniLM) + MLP head | 0.964 | 0.946 | 0.955 | 0.919 | 3.76 | 1299 | 22.13 | 0 |
 | LLM zero-shot / few-shot | Chưa chạy | Chưa chạy | Chưa chạy | Chưa chạy | — | — | — | — |
 
 (*) Giá trị 0 là chi phí API được gán trong code cho mô hình chạy cục bộ, chưa bao gồm máy chủ, CPU/GPU và vận hành. Thời gian của nhóm embedding gồm encode tập train và huấn luyện đầu phân loại nếu có. Độ trễ đo từ văn bản thô tới nhãn trên môi trường chạy notebook.
@@ -63,11 +63,11 @@ Notebook có sáu dự đoán đã ghi thời gian ở Phần 1–3. Chưa đủ
 
 | Dự đoán đã ghi | Kết quả thực tế | Nhận xét |
 | --- | --- | --- |
-| `ml_f1` (14:55:15): F1 khoảng 0.9, precision cao hơn recall | F1 0.881; precision 0.989, recall 0.795 | F1 thấp hơn dự đoán khoảng 0.019. BoW bắt được từ khoá đặc trưng nhưng bỏ sót spam có cách diễn đạt khác. |
-| `dl_curve` (14:56:21): validation loss không giảm mãi; MLP hơn hoặc tương đương LogReg | Chỉ số val loss nhỏ nhất là 6; F1 MLP 0.944 so với LogReg 0.881 | MLP tăng F1 0.063. Cần phân biệt epoch tốt nhất theo validation với mô hình cuối 30 epoch đang được đánh giá. |
-| `dl_relu` (14:56:45): bỏ ReLU thì F1 giảm hoặc bằng | F1 không ReLU là 0.944, bằng MLP có ReLU ở độ chính xác ba chữ số | Kết quả thuộc nhánh “bằng”. Hai lớp tuyến tính liên tiếp có thể gộp thành một phép biến đổi tuyến tính; lợi ích từ ReLU chưa thể hiện trên phép đo này. |
+| `ml_f1` (15:17:53): F1 khoảng 0.9, precision cao hơn recall | F1 0.881; precision 0.989, recall 0.795 | F1 thấp hơn dự đoán khoảng 0.019. BoW bắt được từ khoá đặc trưng nhưng bỏ sót spam có cách diễn đạt khác. |
+| `dl_curve` (15:18:20): validation loss không giảm mãi; MLP hơn hoặc tương đương LogReg | Chỉ số val loss nhỏ nhất là 6; F1 MLP 0.944 so với LogReg 0.881 | MLP tăng F1 0.063. Cần phân biệt epoch tốt nhất theo validation với mô hình cuối 30 epoch đang được đánh giá. |
+| `dl_relu` (15:18:27): bỏ ReLU thì F1 giảm hoặc bằng | F1 không ReLU là 0.944, bằng MLP có ReLU ở độ chính xác ba chữ số | Kết quả thuộc nhánh “bằng”. Hai lớp tuyến tính liên tiếp có thể gộp thành một phép biến đổi tuyến tính; lợi ích từ ReLU chưa thể hiện trên phép đo này. |
 
-Dự đoán `emb_tricky` (14:57:40) cũng khớp: Encoder + LogReg đúng 5/6, cao hơn BoW 4/6. Tuy nhiên, ví dụ “Mum says the prize for the school raffle is a cake lol” trong câu trả lời Phần 3 cần sửa nhận xét: output cho thấy **cả hai mô hình đều đoán đúng ham**, không phải BoW đoán sai.
+Dự đoán `emb_tricky` (15:19:10) cũng khớp: Encoder + LogReg đúng 5/6, cao hơn BoW 4/6. Tuy nhiên, ví dụ “Mum says the prize for the school raffle is a cake lol” trong câu trả lời Phần 3 cần sửa nhận xét: output cho thấy **cả hai mô hình đều đoán đúng ham**, không phải BoW đoán sai.
 
 Câu trả lời learning rate trong notebook khẳng định loss thành NaN; báo cáo chưa xác nhận khẳng định này từ số liệu văn bản đã lưu. BCE có bước clip xác suất, nên learning rate lớn không tự động đồng nghĩa loss trở thành NaN.
 
@@ -84,15 +84,15 @@ Hai trường hợp này thuộc thí nghiệm 3.B, không phải kết quả c�
 
 ## 5. Tính tay và thử thách cá nhân
 
-Hai ảnh viết tay đã có đủ các bước cho năm phép tính. Kết quả thể hiện trên ảnh gồm baseline accuracy khoảng 0.874, sigmoid tại 0 bằng 0.5, F1 khoảng 0.73, cosine khoảng 0.6 và chi phí 10.50 USD/ngày theo giả định giá/token trong đề. Khi điền theo yêu cầu làm tròn hai chữ số, baseline accuracy dùng 0.87 và cosine dùng 0.60. Ô `HAND_CALC` hiện vẫn để `None`, chưa có kết quả kiểm tra hash.
+Hai ảnh viết tay đã có đủ các bước cho năm phép tính. Kết quả thể hiện trên ảnh gồm baseline accuracy khoảng 0.874, sigmoid tại 0 bằng 0.5, F1 khoảng 0.73, cosine khoảng 0.6 và chi phí 10.50 USD/ngày theo giả định giá/token trong đề. Khi điền theo yêu cầu làm tròn hai chữ số, baseline accuracy dùng 0.87 và cosine dùng 0.60. Ô `HAND_CALC` trong notebook mới nhất đã được điền năm giá trị trên; chưa lưu output kiểm tra hash tại đó. JSON có cả năm kiểm tra tính tay là `true`.
 
 Theo quy tắc `4388 % 6 = 2`, thử thách tương ứng là **đề số 3**: đổi lớp ẩn MLP thành 4 và 512 nơ-ron, báo số tham số, F1 test, thời gian train và giải thích khi nào chọn mạng nhỏ. Đây là đề suy ra từ SEED; ô nhận đề chưa chạy, ô code và phần giải thích thử thách còn trống. Do đó chưa có kết quả cho hai cấu hình này. Cấu hình 64 nơ-ron ở Phần 2 chỉ là kết quả gốc để đối chiếu, chưa hoàn thành thử thách cá nhân.
 
 ## 6. Phương án cho sản phẩm thật
 
-Với yêu cầu 10 triệu SMS/ngày, lưu lượng trung bình khoảng 115.74 tin/giây và p95 < 50 ms/tin, em đề xuất **BoW + MLP làm phương án ban đầu**, dựa trên kết quả đã đo: F1 0.944, precision 0.990, recall 0.902, p95 4.52 ms/tin và throughput cả lô khoảng 12.740 tin/giây. BoW + LogReg cũng đạt yêu cầu độ trễ với p95 0.14 ms, nhưng F1 thấp hơn (0.881) và recall chỉ 0.795.
+Với yêu cầu 10 triệu SMS/ngày, lưu lượng trung bình khoảng 115.74 tin/giây và p95 < 50 ms/tin, em đề xuất **MiniLM + LogReg** theo lần đo trong JSON: F1 test 0.960, F1 SUB 0.947, precision 0.956, recall 0.964, p95 37.11 ms/tin và throughput cả lô khoảng 1.159 tin/giây. Notebook mới nhất cũng cho p95 của phương án này dưới 50 ms (25.88 ms), nhưng đây vẫn là số đo trên môi trường notebook.
 
-Các phương án embedding chưa đạt SLA trong phép đo hiện tại: kNN 88.50 ms, LogReg 72.40 ms, MLP head 50.03 ms. MLP head rất sát mốc nhưng vẫn lớn hơn 50 ms, nên chưa được coi là đạt. Chọn BoW + MLP đồng nghĩa chấp nhận F1 thấp hơn MiniLM + LogReg 0.016 để có độ trễ thấp hơn đáng kể. Cần đo tải đồng thời, giờ cao điểm và chi phí hạ tầng trước khi xác nhận năng lực phục vụ thực tế; throughput cả lô của notebook chưa thay thế phép đo đó.
+Trong JSON, cả năm mô hình có p95 dưới 50 ms. BoW + MLP là phương án nhẹ hơn với p95 0.36 ms và F1 0.944; đổi lại recall 0.902 thấp hơn MiniLM + LogReg. Riêng MiniLM + MLP head có p95 22.13 ms trong JSON nhưng 55.02 ms trong notebook mới nhất, cho thấy cần đo lặp lại và đo dưới tải thực tế trước khi cam kết SLA. Throughput cả lô chưa thay thế kiểm thử tải đồng thời, giờ cao điểm và chi phí hạ tầng.
 
 Một hướng mở rộng là dùng BoW + MLP xử lý các tin có độ tin cậy cao, chuyển các tin lưỡng lự sang embedding hoặc LLM để đánh giá bổ sung. Đây mới là đề xuất thiết kế, chưa triển khai hoặc đo trong notebook; nếu xử lý đồng bộ, nhánh bổ sung vẫn phải được đo lại theo SLA toàn hệ thống.
 
@@ -102,7 +102,7 @@ Theo đúng giả định bài tính tay (100 token input, 1 token output; giá 
 
 | Phạm vi | Yêu cầu gửi AI | AI thực hiện | Trạng thái kiểm chứng |
 | --- | --- | --- | --- |
-| Viết báo cáo hiện tại | Đọc notebook đã làm, viết báo cáo và đổi tên file theo thông tin cá nhân | Đọc code/output và hai ảnh tính tay; tổng hợp số liệu, nêu phần chưa hoàn thành, chỉ ra câu trả lời chưa khớp output; đổi tên báo cáo | Đối chiếu số liệu với output lưu trong notebook; không sửa code, chạy lại thí nghiệm hoặc hoàn thành TODO thay người học |
+| Viết báo cáo hiện tại | Đọc notebook đã làm, viết báo cáo và đổi tên file theo thông tin cá nhân | Đọc code/output và hai ảnh tính tay; tổng hợp số liệu, nêu phần chưa hoàn thành, chỉ ra câu trả lời chưa khớp output; đổi tên báo cáo | Đối chiếu code/output notebook và JSON; sau khi đồng bộ main, cập nhật bảng theo JSON và ghi rõ chênh lệch giữa hai lần đo; không sửa code hoặc hoàn thành TODO thay người học |
 
 AI log trong notebook đang trống, vì vậy chưa có thông tin để xác nhận các lần dùng AI trước đó. Bảng trên chỉ ghi nhận lần hỗ trợ viết báo cáo này.
 
