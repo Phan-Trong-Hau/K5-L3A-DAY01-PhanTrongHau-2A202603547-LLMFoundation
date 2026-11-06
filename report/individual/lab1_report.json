@@ -1,0 +1,132 @@
+{
+ "seed": 4388,
+ "predictions": {
+  "ml_f1": {
+   "text": "F1 ~0.9, precision cao hơn recall vì mô hình bắt rất chuẩn các từ khóa spam đặc trưng (win, free) gây ra ít báo động giả, nhưng bỏ sót một số tin spam không dùng từ khóa",
+   "time": "15:17:53"
+  },
+  "ml_lr": {
+   "text": "lr=0.001 thì loss giảm rất chậm do bước nhảy quá nhỏ, lr=50 thì loss bùng nổ  do bước nhảy quá lớn vượt qua điểm cực tiểu",
+   "time": "15:17:58"
+  },
+  "dl_curve": {
+   "text": "1. Val loss KHÔNG giảm mãi mà sẽ tăng lại (overfitting), 2. MLP sẽ hơn hoặc tương đương Logistic Regression về F1 nhờ khả năng học tổ hợp từ phức tạp",
+   "time": "15:18:20"
+  },
+  "dl_relu": {
+   "text": "Nếu bỏ ReLU, mạng 2 lớp tuyến tính liên tiếp chỉ tương đương với mô hình tuyến tính đơn giản (Logistic Regression), điểm F1 sẽ giảm hoặc bằng chứ không tăng được do mất khả năng học phi tuyến.",
+   "time": "15:18:27"
+  },
+  "emb_search": {
+   "text": "Kết quả sẽ gần nhất là spam, vì câu hỏi có ngữ nghĩa quảng cáo, mời chào nhận quà, dù không có từ khóa chính xác như BoW nhưng vector nghĩa sẽ bị kéo về phía spam.",
+   "time": "15:18:57"
+  },
+  "emb_tricky": {
+   "text": "Mô hình Encoder + LogReg sẽ đoán đúng nhiều hơn vì nó có thể hiểu ngữ cảnh ngữ nghĩa của toàn câu thay vì bị bẫy bởi các từ khóa đơn lẻ như BoW.",
+   "time": "15:19:10"
+  }
+ },
+ "checks": {
+  "1.1 vectorize": true,
+  "1.2 sigmoid / predict_proba": true,
+  "1.3 train_logreg": true,
+  "1.4 metrics": true,
+  "2.1 build_mlp": true,
+  "2.2 train_mlp": true,
+  "3.1–3.2 cosine / top_k_similar": true,
+  "3.3 knn_predict": true,
+  "tính tay: baseline_accuracy": true,
+  "tính tay: sigmoid_0": true,
+  "tính tay: f1_example": true,
+  "tính tay: cosine_example": true,
+  "tính tay: llm_cost_per_day": true
+ },
+ "experiments": [
+  {
+   "key": "ml_f1",
+   "time": "15:17:53"
+  },
+  {
+   "key": "ml_lr",
+   "time": "15:17:58"
+  },
+  {
+   "key": "dl_curve",
+   "time": "15:18:20"
+  },
+  {
+   "key": "dl_relu",
+   "time": "15:18:27"
+  },
+  {
+   "key": "emb_search",
+   "time": "15:18:57"
+  },
+  {
+   "key": "emb_tricky",
+   "time": "15:19:10"
+  }
+ ],
+ "results": {
+  "1. BoW + LogReg (tự code)": {
+   "accuracy": 0.9690322580645161,
+   "precision": 0.9888888888888889,
+   "recall": 0.7946428571428571,
+   "f1": 0.8811881188118811,
+   "f1_SUB": 0.8235294117647058,
+   "train_s": 4.555300197999713,
+   "msg_per_s": 33991.91536208044,
+   "p50_ms": 0.06250749993341742,
+   "p95_ms": 0.10027945027104576,
+   "usd_per_1k": 0.0
+  },
+  "2. BoW + MLP (deep learning)": {
+   "accuracy": 0.984516129032258,
+   "precision": 0.9901960784313726,
+   "recall": 0.9017857142857143,
+   "f1": 0.9439252336448598,
+   "f1_SUB": 0.8571428571428571,
+   "train_s": 6.281093312999474,
+   "msg_per_s": 37028.56957258971,
+   "p50_ms": 0.27806449952549883,
+   "p95_ms": 0.3597302996695361,
+   "usd_per_1k": 0.0
+  },
+  "3a. Encoder (MiniLM) + kNN": {
+   "accuracy": 0.9741935483870968,
+   "precision": 0.8833333333333333,
+   "recall": 0.9464285714285714,
+   "f1": 0.9137931034482758,
+   "f1_SUB": 0.8947368421052632,
+   "train_s": 1.825410147999719,
+   "msg_per_s": 133.71699346383892,
+   "p50_ms": 27.90565300028902,
+   "p95_ms": 46.647419249302395,
+   "usd_per_1k": 0.0
+  },
+  "3b. Encoder (MiniLM) + LogReg": {
+   "accuracy": 0.9883870967741936,
+   "precision": 0.9557522123893806,
+   "recall": 0.9642857142857143,
+   "f1": 0.96,
+   "f1_SUB": 0.9473684210526316,
+   "train_s": 3.215365580999787,
+   "msg_per_s": 1158.5739422212016,
+   "p50_ms": 12.501007499849948,
+   "p95_ms": 37.11292620018865,
+   "usd_per_1k": 0.0
+  },
+  "3c. Encoder (MiniLM) + MLP head": {
+   "accuracy": 0.9870967741935484,
+   "precision": 0.9636363636363636,
+   "recall": 0.9464285714285714,
+   "f1": 0.9549549549549549,
+   "f1_SUB": 0.9189189189189189,
+   "train_s": 3.7597063069997603,
+   "msg_per_s": 1298.8707929052496,
+   "p50_ms": 11.535535999882995,
+   "p95_ms": 22.129604249357723,
+   "usd_per_1k": 0.0
+  }
+ }
+}
