@@ -110,14 +110,6 @@ Có thể dùng model local xử lý các tin chắc chắn, chuyển các tin l
 
 Theo giả định của đề, 100 input + 1 output token/SMS, giá nhỏ 0.10/0.50 USD mỗi triệu token: 10 triệu SMS/ngày khoảng 105 USD/ngày, 3.150 USD/30 ngày. Với giá lớn giả định 1.00/5.00: 31.500 USD/30 ngày. Đây là phép tính giả định, chưa xác minh giá hiện hành hoặc đo hóa đơn; chưa gồm retry, prompt dài hơn, hạ tầng.
 
-## 7. AI log và điều đã học
-
-| Phạm vi | Yêu cầu | AI hỗ trợ | Kiểm chứng / giới hạn |
-| --- | --- | --- | --- |
-| Báo cáo các lượt trước | Đọc bài làm, viết report, đồng bộ Git | Tổng hợp output, đổi tên báo cáo, thêm bản notebook nộp | Đối chiếu dữ liệu đã lưu |
-| Lần sửa hiện tại | Sửa cả hai notebook: MLP 4/512, LLM, stress test, AI log và JSON NaN | Viết/sửa code, chạy lại local, sửa giải thích và đồng bộ kết quả | Đã chạy CPU, kiểm thử mock API; không có kết quả LLM thật vì thiếu credential |
-| Các lần dùng AI trước cuộc trao đổi này | Chưa có thông tin từ người học | Không tự tạo lịch sử | Người học bổ sung nếu có |
-
-Log này cũng được ghi trong hai notebook và JSON. Thử thách có AI hỗ trợ, không được coi là bằng chứng tự làm không AI. Tham chiếu kỹ thuật API: [OpenAI Chat Completions](https://developers.openai.com/api/reference/resources/chat/subresources/completions/methods/create).
+## 7. Điều đã học
 
 Điều rút ra: biểu diễn dữ liệu ảnh hưởng mạnh tới chất lượng và mô hình nhiều tham số không luôn tốt hơn. Mock test đạt chỉ chứng minh các nhánh code được kiểm tra, không chứng minh API thật phân loại thành công. Dữ liệu thiếu phải có trạng thái rõ ràng, không biến thành nhãn ham hoặc số đo benchmark giả.

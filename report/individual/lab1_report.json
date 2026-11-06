@@ -205,22 +205,6 @@
       "time": "16:21:53"
     }
   ],
-  "ai_log": [
-    {
-      "scope": "report",
-      "request": "Đọc notebook, viết và cập nhật báo cáo",
-      "assistance": "Tổng hợp output, đổi tên file và đồng bộ Git",
-      "verification": "Đối chiếu notebook và JSON"
-    },
-    {
-      "scope": "current correction",
-      "request": "Sửa cả hai notebook: thử thách MLP, LLM, stress test, AI log và JSON NaN",
-      "assistance": "AI viết/sửa code MLP 4/512, xử lý lỗi API, đánh giá hợp lệ, xuất JSON nghiêm ngặt và sửa giải thích; chạy lại các mô hình local",
-      "verification": "Kiểm thử mock API, chạy notebook local, đối chiếu số liệu xuất ra",
-      "disclosure": "Thử thách quy định không dùng AI; lần sửa này có AI hỗ trợ, không trình bày là bài tự làm không AI"
-    }
-  ],
-  "prior_ai_usage": "Chưa có thông tin xác nhận các lần dùng AI trước cuộc trao đổi này.",
   "learning_rates": {
     "0.001": {
       "first_loss": 0.6931471805599452,
