@@ -8,7 +8,7 @@
 
 | Tệp | Trạng thái |
 | --- | --- |
-| [Notebook trong src](../../src/day01_spam_ml_dl_embedding_llm.ipynb) | Có output Phần 0–5 với các giới hạn nêu dưới đây; chưa có bản `day01_lab.ipynb` trong thư mục nộp |
+| [Notebook bài nộp](day01_lab.ipynb) | Đã sao chép từ notebook trong `src`, giữ nguyên code và output Phần 0–5 với các giới hạn nêu dưới đây |
 | [lab1_report.json](lab1_report.json) | Đã có: SEED 4388, 10 dự đoán, 15/15 kiểm tra đạt và 8 hàng kết quả (3 hàng LLM không hợp lệ) |
 | [Ảnh tính tay 1](hand_calc_1.jpeg) | Có các bước tính baseline accuracy, sigmoid và F1 |
 | [Ảnh tính tay 2](hand_calc_2.jpeg) | Có các bước tính cosine và chi phí LLM theo giả định của đề |
